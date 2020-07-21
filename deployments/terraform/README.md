@@ -1,2 +1,0 @@
-# artemis
-Artemis project
