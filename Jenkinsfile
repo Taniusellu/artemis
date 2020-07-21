@@ -45,7 +45,7 @@ def slavePodTemplate = """
         container("docker") {
             dir('deployments/docker') {
                 stage("Docker Build") {
-                    sh "docker build -t Taniusellu/artemis:${branch.replace('version/', 'v')}  ."
+                    sh "docker build -t tmoraru/artemis:${branch.replace('version/', 'v')}  ."
                 }
                 stage("Docker Login") {
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', passwordVariable: 'password', usernameVariable: 'username')]) {
@@ -53,7 +53,7 @@ def slavePodTemplate = """
                     }
                 }
                 stage("Docker Push") {
-                    sh "docker push Taniusellu/artemis:${branch.replace('version/', 'v')}"
+                    sh "docker push tmoraru/artemis:${branch.replace('version/', 'v')}"
                 }
             }
         }
