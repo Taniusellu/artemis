@@ -54,7 +54,6 @@ def slavePodTemplate = """
                 }
                 stage("Docker Push") {
                     sh "docker push tmoraru/artemis:${branch.replace('version/', 'v')}"
-                
                 }
 
               stage("Trigger Deploy"){
