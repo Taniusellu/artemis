@@ -36,10 +36,11 @@ def slavePodTemplate = """
               path: /var/run/docker.sock
     """
     def branch = "${scm.branches[0].name}".replaceAll(/^\*\//, '').replace("/", "-").toLowerCase()
+    
     podTemplate(name: k8slabel, label: k8slabel, yaml: slavePodTemplate, showRawYaml: false) {
       node(k8slabel) {
         stage('Pull SCM') {
-            checkout scm 
+            checkout scm      /* go ahead and pull the source code inside your Jenkise project location */
         }
         container("docker") {
             dir('deployments/docker') {
@@ -52,7 +53,7 @@ def slavePodTemplate = """
                     }
                 }
                 stage("Docker Push") {
-                    sh "docker push fsadykov/artemis:${branch.replace('version/', 'v')}"
+                    sh "docker push Taniusellu/artemis:${branch.replace('version/', 'v')}"
                 }
             }
         }
