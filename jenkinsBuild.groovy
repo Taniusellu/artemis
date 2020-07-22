@@ -1,4 +1,5 @@
 def k8slabel = "jenkins-pipeline-${UUID.randomUUID().toString()}"
+
 def slavePodTemplate = """
       metadata:
         labels:
@@ -35,34 +36,45 @@ def slavePodTemplate = """
             hostPath:
               path: /var/run/docker.sock
     """
-    def branch = "${scm.branches[0].name}".replaceAll(/^\*\//, '').replace("/", "-").toLowerCase()
     
+    def branch = "${scm.branches[0].name}".replaceAll(/^\*\//, '').replace("/", "-").toLowerCase()
+
     podTemplate(name: k8slabel, label: k8slabel, yaml: slavePodTemplate, showRawYaml: false) {
       node(k8slabel) {
+
         stage('Pull SCM') {
-            checkout scm      /* go ahead and pull the source code inside your Jenkise project location */
+            checkout scm 
         }
         container("docker") {
             dir('deployments/docker') {
                 stage("Docker Build") {
-                    sh "docker build -t tatianamoraru/artemis:${branch.replace('version/', 'v')}  ."
+                  sh "docker build -t tatianamoraru/artemis:${branch.replace('version/', 'v')}  ."
                 }
+
                 stage("Docker Login") {
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', passwordVariable: 'password', usernameVariable: 'username')]) {
-                        sh "docker login --username ${username} --password ${password}"
+                      sh "docker login --username ${username} --password ${password}"
                     }
                 }
+
                 stage("Docker Push") {
+
                     sh "docker push tatianamoraru/artemis:${branch.replace('version/', 'v')}"
+
+
                 }
 
-              stage("Trigger Deploy"){
-                build 'artemis-deploy'
-
-
-              }
-                   
+                stage("Trigger Deploy") {
+                  build job: 'artemis-deploy', 
+                  parameters: [
+                      [$class: 'BooleanParameterValue', name: 'terraformApply', value: true],
+                      [$class: 'StringParameterValue',  name: 'environment', value: "dev"]
+                      ]
+                }
             }
         }
       }
     }
+
+
+
