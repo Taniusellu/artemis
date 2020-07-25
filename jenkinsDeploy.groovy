@@ -61,7 +61,7 @@ def slavePodTemplate = """
       node(k8slabel) {
           
         stage("Pull SCM") {
-            git 'https://github.com/fuchicorp/artemis-class.git'
+            git 'https://github.com/tmoraru/artemis.git'
         }
 
         stage("Generate Variables") {
@@ -98,7 +98,7 @@ def slavePodTemplate = """
                                 #!/bin/bash
                                 set +ex
                                 terraform init 
-                                terraform plan -var-file
+                                terraform plan 
                                 """
                             }
                         }
