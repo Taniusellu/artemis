@@ -8,10 +8,7 @@ properties([
         string(defaultValue: 'None', description: 'Please provide the docker image', name: 'docker_image', trim: true)
         ])
     ])
-
-
 def k8slabel = "jenkins-pipeline-${UUID.randomUUID().toString()}"
-
 def slavePodTemplate = """
       metadata:
         labels:
@@ -57,17 +54,13 @@ def slavePodTemplate = """
             hostPath:
               path: /var/run/docker.sock
     """
-
     podTemplate(name: k8slabel, label: k8slabel, yaml: slavePodTemplate, showRawYaml: false) {
       node(k8slabel) {
-          
         stage("Pull SCM") {
             git 'https://github.com/tmoraru/artemis.git'
         }
-
         stage("Generate Variables") {
           dir('deployments/terraform') {
-
             println("Generate Variables")
             def deployment_configuration_tfvars = """
             environment = "${environment}"
@@ -75,10 +68,8 @@ def slavePodTemplate = """
             """.stripIndent()
             writeFile file: 'deployment_configuration.tfvars', text: "${deployment_configuration_tfvars}"
             sh 'cat deployment_configuration.tfvars >> dev.tfvars'
-
           }   
         }
-
         container("buildtools") {
             dir('deployments/terraform') {
                 withCredentials([usernamePassword(credentialsId: "aws-access-${environment}", 
@@ -106,7 +97,6 @@ def slavePodTemplate = """
                             }
                         }
                     }
-
                     stage("Terraform Destroy") {
                         if (params.terraformDestroy) {
                             println("Destroying the all")
@@ -121,7 +111,6 @@ def slavePodTemplate = """
                         }
                     }
                 }
-
             }
         }
       }
