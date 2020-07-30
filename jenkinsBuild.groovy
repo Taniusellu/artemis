@@ -93,9 +93,3 @@ def slavePodTemplate = """
     }
 
 
-<<<<<<< HEAD
-
-
-
-=======
->>>>>>> 8a2cc69fc0a625e92e7c9bceccf0fe141c4837fa
