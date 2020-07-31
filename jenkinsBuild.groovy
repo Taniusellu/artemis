@@ -8,7 +8,7 @@ def slavePodTemplate = """
           jenkinsjoblabel: ${env.JOB_NAME}-${env.BUILD_NUMBER}
       spec:
         affinity:
-          podAntiAffinity:
+          podAntiAffinity: 
             requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchExpressions:
